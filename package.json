@@ -1,0 +1,13 @@
+{
+  "name": "pharos-cs-helper",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "파로스 도움말 매뉴얼에서 고객 문의 답변 근거를 찾아 초안까지 만드는 사내 도구",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "0.135.0"
+  }
+}

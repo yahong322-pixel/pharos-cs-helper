@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>파로스 CS 답변 도우미</title>
+<meta name="description" content="고객 문의에 대한 답변을 파로스 도움말 매뉴얼에서 찾아 초안까지 만들어 주는 사내 도구">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='25' font-size='26'%3E%F0%9F%93%9E%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap top-inner">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <div>
+        <h1>파로스 CS 답변 도우미</h1>
+        <p class="brand-sub">고객 문의를 붙여넣으면 도움말 매뉴얼에서 근거를 찾아 답변 초안을 만듭니다</p>
+      </div>
+    </div>
+    <nav class="tabs" role="tablist">
+      <button class="tab is-on" role="tab" data-view="ask">답변 찾기</button>
+      <button class="tab" role="tab" data-view="kb">추가 지식 <span class="pill" id="kbCount">0</span></button>
+      <button class="tab" role="tab" data-view="browse">매뉴얼 전체</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ───────── 답변 찾기 ───────── -->
+  <section id="view-ask" class="view">
+    <form class="askbox" id="askForm">
+      <label class="askbox-label" for="q">고객 문의</label>
+      <textarea id="q" rows="3" placeholder="예) 거래명세서를 출력하려는데 회사 도장이 안 찍혀서 나온다고 하십니다." autocomplete="off"></textarea>
+      <div class="askbox-foot">
+        <p class="hint" id="corpusHint">매뉴얼을 불러오는 중…</p>
+        <button type="submit" class="btn btn-primary" id="askBtn">답변 찾기</button>
+      </div>
+    </form>
+
+    <div id="askResult" hidden>
+      <article class="draft" id="draftCard">
+        <div class="draft-head">
+          <h2>답변 초안</h2>
+          <div class="draft-actions">
+            <button class="btn btn-ghost" id="regenBtn" type="button">다시 생성</button>
+            <button class="btn btn-soft" id="copyBtn" type="button">복사</button>
+          </div>
+        </div>
+        <div class="draft-body" id="draftBody"></div>
+        <p class="draft-note" id="draftNote"></p>
+      </article>
+
+      <h2 class="sec-title">근거 <span class="sec-count" id="hitCount"></span></h2>
+      <div id="hits" class="hits"></div>
+      <p class="empty" id="noHits" hidden>
+        매뉴얼에서 관련 내용을 찾지 못했습니다. 답을 알고 계시다면
+        <button class="linkbtn" type="button" data-goto-kb>추가 지식으로 등록</button>해 두면 다음부터 함께 검색됩니다.
+      </p>
+    </div>
+  </section>
+
+  <!-- ───────── 추가 지식 ───────── -->
+  <section id="view-kb" class="view" hidden>
+    <div class="kb-head">
+      <div>
+        <h2 class="sec-title">추가 지식</h2>
+        <p class="hint" id="kbStatus"></p>
+      </div>
+      <button class="btn btn-primary" id="kbNewBtn" type="button">내용 추가</button>
+    </div>
+
+    <form class="kbform" id="kbForm" hidden>
+      <input type="hidden" id="kbId">
+      <label for="kbQ">질문 / 증상</label>
+      <input id="kbQ" type="text" placeholder="예) 세금계산서 발행 후 공급받는자 사업자번호를 바꿀 수 있나요?" autocomplete="off">
+      <label for="kbA">답변</label>
+      <textarea id="kbA" rows="6" placeholder="고객에게 안내할 내용을 적어 주세요. 매뉴얼에 없는 운영 기준이나 예외 처리도 여기에 남기면 됩니다."></textarea>
+      <div class="kbform-row">
+        <div>
+          <label for="kbMenu">관련 메뉴 <span class="opt">(선택)</span></label>
+          <input id="kbMenu" type="text" list="menuList" placeholder="메뉴명을 입력하면 자동완성됩니다" autocomplete="off">
+          <datalist id="menuList"></datalist>
+        </div>
+        <div>
+          <label for="kbAuthor">작성자</label>
+          <input id="kbAuthor" type="text" placeholder="이름" autocomplete="off">
+        </div>
+      </div>
+      <div class="kbform-foot">
+        <button type="button" class="btn btn-ghost" id="kbCancelBtn">취소</button>
+        <button type="submit" class="btn btn-primary" id="kbSaveBtn">저장</button>
+      </div>
+    </form>
+
+    <div id="kbList" class="kblist"></div>
+    <p class="empty" id="kbEmpty" hidden>아직 등록된 내용이 없습니다. 매뉴얼에 없는 안내 기준을 쌓아 두면 팀 전체가 같은 답을 하게 됩니다.</p>
+  </section>
+
+  <!-- ───────── 매뉴얼 전체 ───────── -->
+  <section id="view-browse" class="view" hidden>
+    <div class="browse-head">
+      <h2 class="sec-title">매뉴얼 전체</h2>
+      <input id="browseFilter" type="search" placeholder="메뉴명으로 걸러내기" autocomplete="off">
+    </div>
+    <div id="browseList" class="browse"></div>
+  </section>
+
+</main>
+
+<footer class="foot wrap">
+  <p>근거 본문은 <a href="https://help.upharos.com/?service=pharos" target="_blank" rel="noopener">파로스 도움말</a>에서 가져옵니다. 답변 초안은 사람이 검토한 뒤 보내 주세요.</p>
+</footer>
+
+<script src="assets/app.js" type="module"></script>
+</body>
+</html>

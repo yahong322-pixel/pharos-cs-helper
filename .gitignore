@@ -1,0 +1,9 @@
+node_modules/
+.vercel
+.env
+.env.local
+.DS_Store
+Thumbs.db
+tools/content/
+tools/menus*.json
+tools/leaf_ids.txt
